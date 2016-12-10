@@ -97,6 +97,7 @@
 	<br />
 	
 	<!--row for the video display convas-->
+	<div class="row">
 	<div class="col-sm-12" style="background-color:lavender;">
 		<div id="title"></div>
         <div align="center" class="embed-responsive embed-responsive-16by9">
