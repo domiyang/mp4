@@ -1,4 +1,4 @@
-## mp4 - a webapp that can stream your own videos in responsive way
+#mp4 - a webapp that can stream your own videos in responsive way
 
 #description
 This is a simple webapp that can stream your videos and provide the responsive webpage for different divices (desktop/tablet/mobile etc.).
