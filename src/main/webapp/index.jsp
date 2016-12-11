@@ -19,6 +19,7 @@
 ---------------------------------------------------------------------------
 --%>
 
+<%@ page pageEncoding="utf-8"%>
 <%@page import="java.io.File"%>
 <%@page import="java.io.FilenameFilter"%>
 <%@page import="java.util.List"%>
@@ -48,10 +49,10 @@
     <![endif]-->
 
   <script> 
-	function view(url, fid) { 
+	function view(url, fileName) { 
 		var video = document.getElementById("video"); 
 		var title = document.getElementById("title"); 
-		title.innerHTML='<div id="title"><h4>' + fid + '</h4></div>';
+		title.innerHTML='<div id="title"><h4>' + fileName + '</h4></div>';
 		video.src=url;
         video.play(); 
 	}
@@ -89,8 +90,9 @@
 		File[] fl = getListOfFiles(folder, Arrays.asList(new String[] {".mp4",".mov"}));
 		for(int i = 0; i < fl.length; i++){
 			File f = fl[i];
-			String url = folder + "/" + f.getName();
-			sbf.append("<button class=\"btn-link\" href=\"#\" onclick=\"view('" + url + "', '" + i + "');\">" + i + "</button>");
+			String fileName = f.getName();
+			String url = folder + "/" + fileName;
+			sbf.append("<button title=\"" + fileName + "\" class=\"btn-link\" href=\"#\" onclick=\"view('" + url + "', '" + fileName + "');\">" + fileName + "</button>");
 		}
 		return sbf.toString();
 	}
