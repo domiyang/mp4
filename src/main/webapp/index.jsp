@@ -90,8 +90,7 @@
 		for(int i = 0; i < fl.length; i++){
 			File f = fl[i];
 			String url = folder + "/" + f.getName();
-			sbf.append("<a href=\"#\" onclick=\"view('" + url + "', '" + i + "');\">" + i + "</a>");
-			sbf.append("&nbsp;|&nbsp;");
+			sbf.append("<button class=\"btn-link\" href=\"#\" onclick=\"view('" + url + "', '" + i + "');\">" + i + "</button>");
 		}
 		return sbf.toString();
 	}
