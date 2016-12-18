@@ -41,7 +41,7 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />	
 
-    <title>The mp4 site</title>
+    <title>the mp4 site</title>
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -56,7 +56,7 @@
 	function view(url, fileName, idx, totalCount) { 
 		var video = document.getElementById("video"); 
 		var title = document.getElementById("title"); 
-		title.innerHTML = '<div id="title"><input id="current" type="text" hidden="true" value="' + idx + '"><h4 title="' + (idx + 1) + '">' + fileName + '</h4></div>';
+		title.innerHTML = '<div id="title"><input id="current" type="text" hidden="true" value="' + idx + '"><h3 title="' + (idx + 1) + '">selected video: ' + fileName + '</h3></div>';
 		
 		setPlayAllMenuDisplay(idx, totalCount);
 		
@@ -204,44 +204,67 @@
     
   </head>
   <body>
-  <h1>Hi there!</h1>
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="js/jquery.min.js"></script> 
   <!-- Include all compiled plugins (below), or include individual files as needed -->
    
   <script src="js/bootstrap.min.js"></script>
   <div class="container">
-    <h1>Video List</h1>
-    <p>Click to watch.</p>	
-	<!--row for link menu top-->
-    <div class="row">
-		<div class="col-sm-12" style="background-color:lavenderblush;">
-		<%=getListOfFilesLink()%>
+	<!--the header root-->
+  	<div class="row">
+		<div class="jumbotron">
+			<h1>hi there, welcome to the mp4 site!</h1>
+			<p>the mp4 site is a simple webapp that can stream your own videos in responsive way.</p>
 		</div>
 	</div>
-	<br />
+	<div class="page-header">
+		<h1>all videos</h1>
+	</div>
+	
+	<!--row for link menu top-->
+    <div class="row">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3>click any item to play, or click Play-All-[xx] to play all videos.</h3>
+			</div>
+			<div class="panel-body">
+				<%=getListOfFilesLink()%>
+			</div>
+		</div>		
+	</div>
 	
 	<!--row for the video display convas-->
 	<div class="row">
-	<div class="col-sm-12" style="background-color:lavender;">
-		<div id="title"></div>
-        <div align="center" class="embed-responsive embed-responsive-16by9">
-          <video id="video" controls class="embed-responsive-item">
-            <source src="" type="video/mp4" />
-          </video>
-        </div>
-	</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div id="title">
+					<h3>select video to play</h3>
+				</div>
+			</div>
+			<div class="panel-body">
+				<div align="center" class="embed-responsive embed-responsive-16by9">
+				  <video id="video" controls class="embed-responsive-item">
+					<source src="" type="video/mp4" />
+				  </video>
+				</div>
+			</div>
+		</div>	
     </div>
-    <br />
 
 	<!--row for link menu buttom-->
     <div class="row">
-		<div class="col-sm-12" style="background-color:lavenderblush;">
-		<%=getListOfFilesLink()%>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3>click any item to play, or click Play-All-[xx] to play all videos.</h3>
+			</div>
+			<div class="panel-body">
+				<%=getListOfFilesLink()%>
+			</div>
 		</div>
 	</div>
-	<br />
-
-	</div>
+	<footer class="footer">
+		<p>© 2016 dmb</p>
+    </footer>
+  </div>
   </body>
 </html>
