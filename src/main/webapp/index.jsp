@@ -24,6 +24,9 @@
 <%@page import="java.io.FilenameFilter"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Arrays"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -49,16 +52,64 @@
     <![endif]-->
 
   <script> 
-	function view(url, fileName) { 
+	// play this video
+	function view(url, fileName, idx, totalCount) { 
 		var video = document.getElementById("video"); 
 		var title = document.getElementById("title"); 
-		title.innerHTML='<div id="title"><h4>' + fileName + '</h4></div>';
-		video.src=url;
-        video.play(); 
+		title.innerHTML = '<div id="title"><input id="current" type="text" hidden="true" value="' + idx + '"><h4 title="' + (idx + 1) + '">' + fileName + '</h4></div>';
+		
+		setPlayAllMenuDisplay(idx, totalCount);
+		
+		video.src = url;
+        video.play();
+	}
+
+	// set the displaying for the play all menu.
+	function setPlayAllMenuDisplay(idx, totalCount){
+		var playAllMenu = document.getElementById("playAllMenu"); 
+		var playAllMenuDisplay = 'Play-All-[' + (idx + 1) + '/' + totalCount + ']';
+		playAllMenu.title = playAllMenuDisplay;
+		playAllMenu.value = playAllMenuDisplay;
+	}
+	
+	// play all videos
+	function viewAll() { 		
+		var playListJson='<%=getPlayListJson()%>';
+		var playListObj = JSON.parse(playListJson);
+		var playList = playListObj.playList;
+		var totalCount = playList.length;
+		
+		var i = 0;
+		var url = playList[i].url;
+		var fileName = playList[i].fileName;
+		
+		setPlayAllMenuDisplay(i, totalCount);
+		
+		view(url, fileName, i, totalCount);
+		
+		var video = document.getElementById("video");		
+		// handle the event when video ended
+		video.onended = function(){
+			// the current playing index
+			var current = document.getElementById("current");
+			
+			//parse 10 base int
+			var idxNext = parseInt(current.value, 10) + 1;
+			
+			if(i < playList.length){
+				url = playList[idxNext].url;
+				fileName = playList[idxNext].fileName;			
+				
+				setPlayAllMenuDisplay(idxNext, totalCount);								
+				
+				view(url, fileName, idxNext, totalCount);
+			}
+		};
 	}
   </script>
 
-	<%! 
+	<%!
+	// check if targetStr end with list of lookupStr (case insensitive).
 	boolean isStringEndWithListOfString(String targetStr, List<String> lookupStr){
 		for (String lookup : lookupStr){
 			if(targetStr.toLowerCase().endsWith(lookup.toLowerCase())){
@@ -68,33 +119,85 @@
 		
 		return false;
 	}
-	
-	File[] getListOfFiles(String folder, final List<String> fileSuffixList){
-		ServletContext app = getServletContext();
-		String filePath = app.getRealPath("/") + folder;
-		File file = new File(filePath);
-		return file.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				if (isStringEndWithListOfString(name, fileSuffixList)) {
-					return true;
+
+	List<File> getListOfFilesForDir(String dirPath, final List<String> fileSuffixList){
+		List<File> list = new ArrayList<File>();
+		File file = new File(dirPath);
+		for (File f : file.listFiles()){
+			if (f.isDirectory()){
+				list.addAll(getListOfFilesForDir(f.getAbsolutePath(), fileSuffixList));
+			}else{
+				if (isStringEndWithListOfString(f.getName(), fileSuffixList)) {
+					list.add(f);
 				} else {
-					return false;
+					// skipping f
 				}
 			}
-		});
+		}
+		return list;
+	}
+	
+	// get list of files started from the folder (including files in all sub folders) in the app root and get files when suffix in the fileSuffixList.
+	List<File> getListOfFiles(String folder, final List<String> fileSuffixList){
+		ServletContext app = getServletContext();
+		String filePath = app.getRealPath("/") + folder;
+		
+		return getListOfFilesForDir(filePath, fileSuffixList);
+	}
+	
+	// to get the play list json string for all videos.
+	String getPlayListJson(){
+		return processVideoList().get("playListJson");
+	}
+	
+	// to get the video link menu.	
+	String getListOfFilesLink(){
+		return processVideoList().get("videoLinkMenu");
 	}
 
-	String getListOfFilesLink(){
+	// process the list of videos
+	Map<String, String> processVideoList(){
+		Map<String, String> vMap = new HashMap<String, String>();
 		StringBuffer sbf = new StringBuffer();
+		StringBuffer sbfMenu = new StringBuffer();
+		
+		// the start folder from webapp root dir
 		String folder = "video";
-		File[] fl = getListOfFiles(folder, Arrays.asList(new String[] {".mp4",".mov"}));
-		for(int i = 0; i < fl.length; i++){
-			File f = fl[i];
+		List<File> fl = getListOfFiles(folder, Arrays.asList(new String[] {".mp4",".mov"}));
+		
+		int videoCount = fl.size();
+		String playAllMenu = "Play-All-[" + videoCount + "]";
+		// add the play_all link at the begining
+		sbfMenu.append("<input id=\"playAllMenu\" type=\"button\" title=\"" + playAllMenu + "\" class=\"btn-link\" href=\"#\" onclick=\"viewAll();\" value=\"" + playAllMenu + "\">");
+		
+		ServletContext app = getServletContext();
+		String appPath = app.getRealPath("/");
+		
+		// to populate list of url/names for playlist
+		sbf.append("{\"playList\":[");
+		for(int i = 0; i < videoCount; i++){
+			File f = fl.get(i);
+			String filePath = f.getAbsolutePath();
 			String fileName = f.getName();
-			String url = folder + "/" + fileName;
-			sbf.append("<button title=\"" + fileName + "\" class=\"btn-link\" href=\"#\" onclick=\"view('" + url + "', '" + fileName + "');\">" + fileName + "</button>");
+			// remove the appPath, replace the \ to /
+			String url = filePath.replace(appPath, "").replace("\\","/");
+			
+			// for link menu
+			sbfMenu.append("<input type=\"button\" title=\"" + (i + 1) + "\" class=\"btn-link\" href=\"#\" onclick=\"view('" + url + "', '" + fileName + "'," + i + "," + videoCount + ");\" value=\"" + fileName + "\">");
+			
+			//for playListJson
+			//append the , for 2nd+ entries
+			if(!sbf.toString().endsWith("[")){
+				sbf.append(",");
+			}
+			sbf.append("{\"url\":\"" + url + "\",\"fileName\":\"" + fileName + "\"}");
 		}
-		return sbf.toString();
+		sbf.append("]}");
+				
+		vMap.put("playListJson",sbf.toString());
+		vMap.put("videoLinkMenu",sbfMenu.toString());
+		
+		return vMap;
 	}
 	
 	%>
