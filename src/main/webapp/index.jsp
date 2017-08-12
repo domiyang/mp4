@@ -163,7 +163,7 @@
 		
 		// the start folder from webapp root dir
 		String folder = "video";
-		List<File> fl = getListOfFiles(folder, Arrays.asList(new String[] {".mp4",".mov"}));
+		List<File> fl = getListOfFiles(folder, Arrays.asList(new String[] {".mp4",".mov",".mp3",".m4v"}));
 		
 		int videoCount = fl.size();
 		String playAllMenu = "Play-All-[" + videoCount + "]";
