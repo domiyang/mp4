@@ -10,6 +10,7 @@ This is a simple webapp that can stream your videos and provide the responsive w
 4. can play any item you clicked (then it'll auto continue to next video)
 5. all files, including the sub directories under the mp4/video will be listed
 6. support utf-8 vidoe files naming
+7. access control with basic username/pass defined from container (e.g.: conf/tomcat-users.xml with role mp4)
 
 ##how to use
 0. make sure to backup the mp4/video folder to some other path outside the webapps directory if already existing
