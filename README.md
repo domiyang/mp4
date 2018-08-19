@@ -13,7 +13,7 @@ This is a simple webapp that can stream your videos and provide the responsive w
 7. access control with basic username/pass defined from container (e.g.: conf/tomcat-users.xml with role mp4) => generic conf for standalone mp4-springboot.
 
 ##how to use
-0. make sure to backup the mp4/video folder to some other path outside the webapps directory if already existing
+0. make sure to backup the mp4/video folder to some other path outside the webapps directory if already existing => video folder specified when run the app
 1. simply drop the mp4.war into a servlet container (e.g.: tomcat/jboss, etc) =>run as java -jar mp4.jar
 2. drop/restore your videos into the mp4/video folder in the container
 3. access from http://host:port/mp4
