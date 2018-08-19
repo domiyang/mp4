@@ -14,7 +14,7 @@ This is a simple webapp that can stream your videos and provide the responsive w
 
 ##how to use
 0. make sure to backup the mp4/video folder to some other path outside the webapps directory if already existing
-1. simply drop the mp4.war into a servlet container (e.g.: tomcat/jboss, etc)
+1. simply drop the mp4.war into a servlet container (e.g.: tomcat/jboss, etc) => java -jar mp4.jar
 2. drop/restore your videos into the mp4/video folder in the container
 3. access from http://host:port/mp4
 
