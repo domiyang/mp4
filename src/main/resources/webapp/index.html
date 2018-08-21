@@ -1,9 +1,9 @@
-<%--
+<!--
 - Description: 	The responsive webapp for videos
-- Date:			10-Dec-2016
+- Date:			21-Aug-2018
 - Author: 		Domi Yang (domi_yang@hotmail.com)
 ---------------------------------------------------------------------------
-   Copyright 2016 Domi Yang (domi_yang@hotmail.com)
+   Copyright 2018 Domi Yang (domi_yang@hotmail.com)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,16 +17,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ---------------------------------------------------------------------------
---%>
-
-<%@ page pageEncoding="utf-8"%>
-<%@page import="java.io.File"%>
-<%@page import="java.io.FilenameFilter"%>
-<%@page import="java.util.List"%>
-<%@page import="java.util.Arrays"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.Map"%>
-<%@page import="java.util.HashMap"%>
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +42,35 @@
       <script src="js/respond.min.js"></script>
     <![endif]-->
 
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="js/jquery.min.js"></script> 
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+   
+  <script src="js/bootstrap.min.js"></script>
+  
   <script> 
+  	//load the menu
+  	loadMenu();
+  	
+  	//populate the menu
+  	function loadMenu(){
+		$(document).ready(function() {
+		    $.ajax({
+	             type: "GET",
+	             dataType: "html",
+	             url: "/medias/links",
+	             success: function(data){
+	            	$('#medialinks1').html(data);
+	                $('#medialinks2').html(data);
+	                console.log("load menu done.");
+	             },
+	             error: function(msg, url, line){
+	            	 console.log("failed load medialinks, msg=" + msg);
+	             }
+	         });
+		});
+  	}
+	
 	// play this video
 	function view(url, fileName, idx, totalCount) { 
 		var video = document.getElementById("video"); 
@@ -72,10 +91,47 @@
 		playAllMenu.value = playAllMenuDisplay;
 	}
 	
+	// reload all videos from media path
+	function reloadMedia() { 	
+		
+		$(document).ready(function() {
+		    $.ajax({
+	             type: "POST",
+	             dataType: "html",
+	             url: "/medias/reload",
+	             success: function(data){
+	                loadMenu();
+	                console.log("done reload medias data=" + data);
+	             },
+	             error: function(msg, url, line){
+	            	 console.log("failed to reload the playlist, msg=" + msg);
+	             }
+	         });
+		});
+
+	}
+	
 	// play all videos
-	function viewAll() { 		
-		var playListJson='<%=getPlayListJson()%>';
-		var playListObj = JSON.parse(playListJson);
+	function viewAll() { 	
+		
+		$(document).ready(function() {
+		    $.ajax({
+	             type: "GET",
+	             dataType: "json",
+	             url: "/medias",
+	             success: function(data){
+	                viewAllHandler(data);
+	             },
+	             error: function(msg, url, line){
+	            	 console.log("failed load playlist, msg=" + msg);
+	             }
+	         });
+		});
+
+	}
+	
+	// view all handler
+	function viewAllHandler(playListObj){
 		var playList = playListObj.playList;
 		var totalCount = playList.length;
 		
@@ -106,109 +162,12 @@
 			}
 		};
 	}
+	
   </script>
-
-	<%!
-	// check if targetStr end with list of lookupStr (case insensitive).
-	boolean isStringEndWithListOfString(String targetStr, List<String> lookupStr){
-		for (String lookup : lookupStr){
-			if(targetStr.toLowerCase().endsWith(lookup.toLowerCase())){
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
-	List<File> getListOfFilesForDir(String dirPath, final List<String> fileSuffixList){
-		List<File> list = new ArrayList<File>();
-		File file = new File(dirPath);
-		for (File f : file.listFiles()){
-			if (f.isDirectory()){
-				list.addAll(getListOfFilesForDir(f.getAbsolutePath(), fileSuffixList));
-			}else{
-				if (isStringEndWithListOfString(f.getName(), fileSuffixList)) {
-					list.add(f);
-				} else {
-					// skipping f
-				}
-			}
-		}
-		return list;
-	}
-	
-	// get list of files started from the folder (including files in all sub folders) in the app root and get files when suffix in the fileSuffixList.
-	List<File> getListOfFiles(String folder, final List<String> fileSuffixList){
-		ServletContext app = getServletContext();
-		String filePath = app.getRealPath("/") + folder;
-		
-		return getListOfFilesForDir(filePath, fileSuffixList);
-	}
-	
-	// to get the play list json string for all videos.
-	String getPlayListJson(){
-		return processVideoList().get("playListJson");
-	}
-	
-	// to get the video link menu.	
-	String getListOfFilesLink(){
-		return processVideoList().get("videoLinkMenu");
-	}
-
-	// process the list of videos
-	Map<String, String> processVideoList(){
-		Map<String, String> vMap = new HashMap<String, String>();
-		StringBuffer sbf = new StringBuffer();
-		StringBuffer sbfMenu = new StringBuffer();
-		
-		// the start folder from webapp root dir
-		String folder = "video";
-		List<File> fl = getListOfFiles(folder, Arrays.asList(new String[] {".mp4",".mov",".mp3",".m4v"}));
-		
-		int videoCount = fl.size();
-		String playAllMenu = "Play-All-[" + videoCount + "]";
-		// add the play_all link at the begining
-		sbfMenu.append("<input id=\"playAllMenu\" type=\"button\" title=\"" + playAllMenu + "\" class=\"btn-link\" href=\"#\" onclick=\"viewAll();\" value=\"" + playAllMenu + "\">");
-		
-		ServletContext app = getServletContext();
-		String appPath = app.getRealPath("/");
-		
-		// to populate list of url/names for playlist
-		sbf.append("{\"playList\":[");
-		for(int i = 0; i < videoCount; i++){
-			File f = fl.get(i);
-			String filePath = f.getAbsolutePath();
-			String fileName = f.getName();
-			// remove the appPath, replace the \ to /
-			String url = filePath.replace(appPath, "").replace("\\","/");
-			
-			// for link menu
-			sbfMenu.append("<input type=\"button\" title=\"" + (i + 1) + "\" class=\"btn-link\" href=\"#\" onclick=\"view('" + url + "', '" + fileName + "'," + i + "," + videoCount + ");\" value=\"" + fileName + "\">");
-			
-			//for playListJson
-			//append the , for 2nd+ entries
-			if(!sbf.toString().endsWith("[")){
-				sbf.append(",");
-			}
-			sbf.append("{\"url\":\"" + url + "\",\"fileName\":\"" + fileName + "\"}");
-		}
-		sbf.append("]}");
-				
-		vMap.put("playListJson",sbf.toString());
-		vMap.put("videoLinkMenu",sbfMenu.toString());
-		
-		return vMap;
-	}
-	
-	%>
     
   </head>
   <body>
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="js/jquery.min.js"></script> 
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-   
-  <script src="js/bootstrap.min.js"></script>
+
   <div class="container">
 	<!--the header root-->
   	<div class="row">
@@ -227,13 +186,11 @@
 			<div class="panel-heading">
 				<h3>click any item to play, or click Play-All-[xx] to play all videos.</h3>
 			</div>
-			<div class="panel-body">
-				<%=getListOfFilesLink()%>
-			</div>
+			<div class="panel-body" id="medialinks1" ></div>
 		</div>		
 	</div>
 	
-	<!--row for the video display convas-->
+	<!--row for the video display canvas-->
 	<div class="row">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -251,19 +208,17 @@
 		</div>	
     </div>
 
-	<!--row for link menu buttom-->
+	<!--row for link menu bottom-->
     <div class="row">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3>click any item to play, or click Play-All-[xx] to play all videos.</h3>
 			</div>
-			<div class="panel-body">
-				<%=getListOfFilesLink()%>
-			</div>
+			<div class="panel-body" id="medialinks2"></div>
 		</div>
 	</div>
 	<footer class="footer">
-		<p>© 2016 dmb</p>
+		<p>@2018 dmb</p>
     </footer>
   </div>
   </body>
