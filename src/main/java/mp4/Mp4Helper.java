@@ -125,7 +125,7 @@ public class Mp4Helper implements WebMvcConfigurer, WebServerFactoryCustomizer<T
 
 	/**
 	 * Get the accepted media file types, default to mp4,mov,mp3,m4v if not
-	 * provided from java arguments via D-mp4.media.types
+	 * provided from java arguments via -Dmp4.media.types
 	 * 
 	 * @return
 	 */
@@ -141,7 +141,7 @@ public class Mp4Helper implements WebMvcConfigurer, WebServerFactoryCustomizer<T
 
 	/**
 	 * Get the media root directory to stream, mandatory java arguments via
-	 * D-mp4.media.path
+	 * -Dmp4.media.path
 	 * 
 	 * @return
 	 */

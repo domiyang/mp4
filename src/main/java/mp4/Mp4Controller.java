@@ -8,12 +8,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * The mp4 controller class for serving the reqeust.
+ * 
  * @author domi
  *
  */
@@ -22,10 +21,12 @@ public class Mp4Controller {
 	private final static Logger log = LoggerFactory.getLogger(Mp4Controller.class);
 	private static Map<String, Object> cacheVMap = new HashMap<>();
 	private final static String cacheVMapKey_VMAP = "VMAP";
-	
-	
+	private static final String vMapKey_VIDEO_LINK_MENU = "videoLinkMenu";
+	private static final String vMapKey_PLAY_LIST_JSON = "playListJson";
+
 	/**
 	 * Reload all videos from the mp4 media path.
+	 * 
 	 * @return
 	 */
 	@GetMapping("/medias/reload")
@@ -38,32 +39,35 @@ public class Mp4Controller {
 
 	/**
 	 * Get the file list json string for all videos.
+	 * 
 	 * @return
 	 */
 	@GetMapping("/medias")
 	String getPlayListJson() {
-		return processVideoList().get("playListJson");
+		return processVideoList().get(vMapKey_PLAY_LIST_JSON);
 	}
 
 	/**
 	 * Get the video link menu html content.
+	 * 
 	 * @return
 	 */
 	@GetMapping("/medias/links")
 	String getListOfFilesLink() {
-		return processVideoList().get("videoLinkMenu");
+		return processVideoList().get(vMapKey_VIDEO_LINK_MENU);
 	}
-    
+
 	/**
 	 * Process the list of videos for links list and file list, etc.
+	 * 
 	 * @return
 	 */
 	private Map<String, String> processVideoList() {
 		Map<String, String> vMap = (Map<String, String>) cacheVMap.get(cacheVMapKey_VMAP);
-		if(vMap != null){
+		if (vMap != null) {
 			return vMap;
 		}
-		
+
 		vMap = new HashMap<String, String>();
 		StringBuffer sbf = new StringBuffer();
 		StringBuffer sbfMenu = new StringBuffer();
@@ -75,7 +79,7 @@ public class Mp4Controller {
 		// add the play_all link at the beginning
 		sbfMenu.append("<input id=\"reloadMedia\" type=\"button\" title=\"" + reloadMedia
 				+ "\" class=\"btn-link\" href=\"#\" onclick=\"reloadMedia();\" value=\"" + reloadMedia + "\">");
-		
+
 		String playAllMenu = "Play-All-[" + videoCount + "]";
 		// add the play_all link at the beginning
 		sbfMenu.append("<input id=\"playAllMenu\" type=\"button\" title=\"" + playAllMenu
@@ -106,14 +110,14 @@ public class Mp4Controller {
 		}
 		sbf.append("]}");
 
-		vMap.put("playListJson", sbf.toString());
-		vMap.put("videoLinkMenu", sbfMenu.toString());
+		vMap.put(vMapKey_PLAY_LIST_JSON, sbf.toString());
+		vMap.put(vMapKey_VIDEO_LINK_MENU, sbfMenu.toString());
 
-		//put into cache
+		// put into cache
 		cacheVMap.put(cacheVMapKey_VMAP, vMap);
 		log.info("loaded vmap into cache.");
-		
+
 		return vMap;
 	}
-	
+
 }
