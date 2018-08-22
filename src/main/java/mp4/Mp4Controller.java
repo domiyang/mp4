@@ -28,7 +28,7 @@ public class Mp4Controller {
 	 * Reload all videos from the mp4 media path.
 	 * @return
 	 */
-	@PostMapping("/medias/reload")
+	@GetMapping("/medias/reload")
 	String reloadVideoList() {
 		cacheVMap.remove(cacheVMapKey_VMAP);
 		processVideoList();
