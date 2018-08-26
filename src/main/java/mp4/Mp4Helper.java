@@ -8,16 +8,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * The helper class to provide some common helper methods.
@@ -26,37 +21,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  */
 @Configuration
-@EnableWebSecurity
-public class Mp4Helper implements WebMvcConfigurer, WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+public class Mp4Helper {
 	private final static Logger log = LoggerFactory.getLogger(Mp4Helper.class);
 
 	@Autowired
 	private static Environment env = null;
-
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/**").addResourceLocations("classpath:/webapp/",
-				"file:" + Mp4Helper.getMediaPath());
-		log.info("set the static res mapping.");
-	}
-
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("forward:index.html");
-		log.info("set the home page.");
-	}
-
-	@Override
-	public void customize(TomcatServletWebServerFactory factory) {
-		factory.setPort(Mp4Helper.getServerPort());
-		log.info("set the server port.");
-	}
-
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser(getAuthUser()).password(getAuthPass()).roles("mp4");
-		log.info("set auth data.");
-	}
 
 	/**
 	 * Get the env value from env bundle for key, use System.getPropery(...) if
@@ -204,5 +173,13 @@ public class Mp4Helper implements WebMvcConfigurer, WebServerFactoryCustomizer<T
 		}
 		return list;
 	}
+	
+	/**
+	 * Get the authentication obj.
+	 * @return
+	 */
+	public static Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
 
 }

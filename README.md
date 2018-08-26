@@ -12,6 +12,7 @@ This is a simple webapp that can stream your videos and provide the responsive w
 6. support utf-8 vidoe files naming
 7. access control with basic username/pass as you specified
 8. support manually reload medias after media path data changes ([Reload-Media])
+9. add loout support via ([Logout-xxx])
 
 ## how to use
 0. select the media path to be stream, the port number (optional default as 8080) and username/pass (optional default as mp4/mp4pass) to be used for access control
