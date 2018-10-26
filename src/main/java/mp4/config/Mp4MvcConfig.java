@@ -2,8 +2,8 @@ package mp4.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -22,10 +22,13 @@ import mp4.Mp4Helper;
 public class Mp4MvcConfig implements WebMvcConfigurer {
 	private final static Logger log = LoggerFactory.getLogger(Mp4MvcConfig.class);
 
+	@Autowired
+	Mp4Helper mp4Helper;
+	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/**").addResourceLocations("classpath:/templates/", "classpath:/static/",
-				"file:" + Mp4Helper.getMediaPath());
+				"file:" + mp4Helper.getMediaPath());
 		log.info("set the static res mapping.");
 	}
 	

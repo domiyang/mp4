@@ -25,7 +25,7 @@ public class Mp4Helper {
 	private final static Logger log = LoggerFactory.getLogger(Mp4Helper.class);
 
 	@Autowired
-	private static Environment env = null;
+	private Environment env = null;
 
 	/**
 	 * Get the env value from env bundle for key, use System.getPropery(...) if
@@ -34,10 +34,11 @@ public class Mp4Helper {
 	 * @param key
 	 * @return
 	 */
-	public static String getEnvProperty(String key) {
+	public String getEnvProperty(String key) {
 		if (env != null) {
 			return env.getProperty(key);
 		}
+		log.warn("env is null");
 		// use system properties when env not available
 		return System.getProperty(key);
 	}
@@ -48,7 +49,7 @@ public class Mp4Helper {
 	 * 
 	 * @return
 	 */
-	public static String getAuthUser() {
+	public String getAuthUser() {
 		// default as mp4 if not provided
 		String user = getEnvProperty("mp4.user");
 		if (StringUtils.isEmpty(user)) {
@@ -65,7 +66,7 @@ public class Mp4Helper {
 	 * 
 	 * @return
 	 */
-	public static String getAuthPass() {
+	public String getAuthPass() {
 		// default as mp4pass if not provided
 		String pass = getEnvProperty("mp4.pass");
 		if (StringUtils.isEmpty(pass)) {
@@ -82,7 +83,7 @@ public class Mp4Helper {
 	 * 
 	 * @return
 	 */
-	public static int getServerPort() {
+	public int getServerPort() {
 		// default as 8080 if not provided
 		String port = getEnvProperty("mp4.server.port");
 		if (StringUtils.isEmpty(port)) {
@@ -98,7 +99,7 @@ public class Mp4Helper {
 	 * 
 	 * @return
 	 */
-	public static List<String> getMediaTypeList() {
+	public List<String> getMediaTypeList() {
 		// default as mp4,mov,mp3,m4v if not provided
 		String mediaTypes = getEnvProperty("mp4.media.types");
 		if (StringUtils.isEmpty(mediaTypes)) {
@@ -114,7 +115,7 @@ public class Mp4Helper {
 	 * 
 	 * @return
 	 */
-	public static String getMediaPath() {
+	public String getMediaPath() {
 		String mediaPath = getEnvProperty("mp4.media.path");
 		log.info("mediaPath=" + mediaPath);
 		if (StringUtils.isEmpty(mediaPath)) {
@@ -138,7 +139,7 @@ public class Mp4Helper {
 	 * @param lookupStr
 	 * @return
 	 */
-	public static boolean isStringEndWithListOfString(String targetStr, List<String> lookupStr) {
+	public boolean isStringEndWithListOfString(String targetStr, List<String> lookupStr) {
 		for (String lookup : lookupStr) {
 			if (targetStr.toLowerCase().endsWith(lookup.toLowerCase())) {
 				return true;
@@ -156,7 +157,7 @@ public class Mp4Helper {
 	 * @param fileTypeList
 	 * @return
 	 */
-	public static List<File> getListOfFilesForDir(String dirPath, final List<String> fileTypeList) {
+	public List<File> getListOfFilesForDir(String dirPath, final List<String> fileTypeList) {
 		log.info("try to laod files from dirPath=" + dirPath + ",for types=" + fileTypeList);
 		List<File> list = new ArrayList<File>();
 		File file = new File(dirPath);
@@ -178,7 +179,7 @@ public class Mp4Helper {
 	 * Get the authentication obj.
 	 * @return
 	 */
-	public static Authentication getAuthentication() {
+	public Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 

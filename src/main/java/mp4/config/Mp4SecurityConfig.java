@@ -33,6 +33,8 @@ public class Mp4SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	AuthenticationSuccessHandler successLoginHandler;
+	@Autowired
+	Mp4Helper mp4Helper;
 
 	@Bean
 	public AuthenticationSuccessHandler getSuccessLoginHandler() {
@@ -51,7 +53,7 @@ public class Mp4SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser(Mp4Helper.getAuthUser()).password(Mp4Helper.getAuthPass()).roles("mp4");
+		auth.inMemoryAuthentication().withUser(mp4Helper.getAuthUser()).password(mp4Helper.getAuthPass()).roles("mp4");
 		log.info("set auth data.");
 	}
 
