@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import mp4.Mp4Helper;
@@ -24,10 +24,13 @@ import mp4.Mp4Helper;
 @RestController
 public class Mp4Controller {
 	private final static Logger log = LoggerFactory.getLogger(Mp4Controller.class);
-	private static Map<String, Object> cacheVMap = new HashMap<>();
+	private static Map<String, Map<String, String>> cacheVMap = new HashMap<>();
 	private final static String cacheVMapKey_VMAP = "VMAP";
 	private static final String vMapKey_VIDEO_LINK_MENU = "videoLinkMenu";
 	private static final String vMapKey_PLAY_LIST_JSON = "playListJson";
+
+	@Autowired
+	Mp4Helper mp4Helper;
 
 	/**
 	 * Reload all videos from the mp4 media path.
@@ -77,12 +80,12 @@ public class Mp4Controller {
 		StringBuffer sbf = new StringBuffer();
 		StringBuffer sbfMenu = new StringBuffer();
 
-		List<File> fileList = Mp4Helper.getListOfFilesForDir(Mp4Helper.getMediaPath(), Mp4Helper.getMediaTypeList());
+		List<File> fileList = mp4Helper.getListOfFilesForDir(mp4Helper.getMediaPath(), mp4Helper.getMediaTypeList());
 
 		int videoCount = fileList.size();
 		
 		//add the logout menu if authenticated
-		Authentication auth = Mp4Helper.getAuthentication();
+		Authentication auth = mp4Helper.getAuthentication();
 		if(auth != null && auth.isAuthenticated()){
 			String logout = "[Logout-" + auth.getName() + "]";
 			sbfMenu.append("<input id=\"reloadMedia\" type=\"button\" title=\"" + logout
@@ -99,7 +102,7 @@ public class Mp4Controller {
 		sbfMenu.append("<input id=\"playAllMenu\" type=\"button\" title=\"" + playAllMenu
 				+ "\" class=\"btn-link\" href=\"#\" onclick=\"viewAll();\" value=\"" + playAllMenu + "\">");
 
-		String mediaPath = Mp4Helper.getMediaPath();
+		String mediaPath = mp4Helper.getMediaPath();
 
 		// to populate list of url/names for playlist
 		sbf.append("{\"playList\":[");
