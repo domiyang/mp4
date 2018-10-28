@@ -13,7 +13,7 @@ This is a simple webapp that can stream your videos and provide the responsive w
 7. access control with basic username/pass defined from container (e.g.: conf/tomcat-users.xml with role mp4)
 
 ## simple jar version
-* refer to branch [mp4-springboot](https://github.com/domiyang/mp4/tree/mp4-springboot)
+* this branch is for war version, refer to branch [mp4-springboot](https://github.com/domiyang/mp4/tree/mp4-springboot) for the springboot jar version
 
 ## how to use
 0. make sure to backup the mp4/video folder to some other path outside the webapps directory if already existing
